@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>自动生成播放列表</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        li:hover {
+            transform: scale(1);
+        }
+
+        li::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #007bff;
+            margin-right: 10px;
+        }
+
+        a {
+            color: #333;
+            text-decoration: none;
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: font-size 0.3s ease;
+        }
+
+        li:hover a {
+            font-size: 23.5px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            display: none;
+        }
+
+        .popup-content {
+            text-align: center;
+        }
+
+        .popup-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .popup-buttons button {
+            margin: 0 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+<h1>自动生成播放列表</h1>
+<ul id="playlist"></ul>
+<div class="popup" id="popup">
+    <span class="close-button" onclick="closePopup()">&times;</span>
+    <div class="popup-content">
+        <p id="popup-text"></p>
+        <div class="popup-buttons">
+            <button id="directBtn">直接跳转</button>
+            <button id="newTabBtn">新开页面跳转</button>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const url = 'https://api.allorigins.win/raw?url=https://paste.ee/r/MYPt1';
+
+        fetch(url)
+            .then(response => response.text())
+            .then(contents => {
+                const videoLinks = contents.split('\n');
+                const playlistElement = document.getElementById('playlist');
+
+                videoLinks.forEach(link => {
+                    if (link.includes('watch?v=')) {
+                        const listItem = document.createElement('li');
+                        const linkElement = document.createElement('a');
+                        const linkText = link.substring(link.lastIndexOf('/') + 1);
+                        linkElement.href = link;
+                        linkElement.textContent = linkText.substring(linkText.lastIndexOf(' ') + 1);
+                        linkElement.addEventListener('click', function (event) {
+                            event.preventDefault();
+                            showPopup(linkElement.textContent, link);
+                        });
+                        listItem.appendChild(linkElement);
+                        playlistElement.appendChild(listItem);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('生成播放列表时出错:', error);
+            });
+    });
+
+    function showPopup(linkText, link) {
+        const popup = document.getElementById('popup');
+        const popupText = document.getElementById('popup-text');
+        const directBtn = document.getElementById('directBtn');
+        const newTabBtn = document.getElementById('newTabBtn');
+
+        popupText.textContent = `是否直接跳转 "${linkText}" 或新开页面跳转？`;
+
+        directBtn.addEventListener('click', function () {
+            window.location.href = link;
+            closePopup();
+        });
+
+        newTabBtn.addEventListener('click', function () {
+            window.open(link, '_blank');
+            closePopup();
+        });
+
+        popup.style.display = 'block';
+    }
+
+    function closePopup() {
+        const popup = document.getElementById('popup');
+        popup.style.display = 'none';
+    }
+</script>
+</body>
+</html>
