@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="icon" type="image/x-icon" href="./logo/catmoon.jpg">
     <title>自动生成播放列表</title>
     <style>
         body {
@@ -119,8 +120,6 @@
     </div>
 </div>
 
-    <script src="index.js"></script>
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const url = 'https://api.allorigins.win/raw?url=https://paste.ee/r/MYPt1';
@@ -152,31 +151,37 @@
             });
     });
 
-    function showPopup(linkText, link) {
-        const popup = document.getElementById('popup');
-        const popupText = document.getElementById('popup-text');
-        const directBtn = document.getElementById('directBtn');
-        const newTabBtn = document.getElementById('newTabBtn');
+    const directBtn = document.getElementById('directBtn');
+const newTabBtn = document.getElementById('newTabBtn');
 
-        popupText.textContent = `是否直接跳转 "${linkText}" 或新开页面跳转？`;
+directBtn.addEventListener('click', function () {
+    const link = directBtn.dataset.link;
+    window.location.href = link;
+    closePopup();
+});
 
-        directBtn.addEventListener('click', function () {
-            window.location.href = link;
-            closePopup();
-        });
+newTabBtn.addEventListener('click', function () {
+    const link = newTabBtn.dataset.link;
+    window.open(link, '_blank');
+    closePopup();
+});
 
-        newTabBtn.addEventListener('click', function () {
-            window.open(link, '_blank');
-            closePopup();
-        });
+function showPopup(linkText, link) {
+    const popup = document.getElementById('popup');
+    const popupText = document.getElementById('popup-text');
 
-        popup.style.display = 'block';
-    }
+    popupText.textContent = `是否直接跳转 "${linkText}" 或新开页面跳转？`;
 
-    function closePopup() {
-        const popup = document.getElementById('popup');
-        popup.style.display = 'none';
-    }
+    directBtn.dataset.link = link;
+    newTabBtn.dataset.link = link;
+
+    popup.style.display = 'block';
+}
+
+function closePopup() {
+    const popup = document.getElementById('popup');
+    popup.style.display = 'none';
+}
 </script>
 </body>
 </html>
